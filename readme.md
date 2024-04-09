@@ -1,4 +1,4 @@
-# Recipe Book Project
+# Recipe Book Project - LAB 1
 
 ## Project Overview
 
@@ -17,6 +17,7 @@ This project is a web application for storing, viewing, updating, and deleting r
 - **Learning Curve**: Getting up to speed with Express and MongoDB was initially challenging.
 - **CRUD Operations**: Implementing CRUD operations and understanding asynchronous JavaScript took some time, especially error handling and response statuses.
 - **Frontend Integration**: Making the frontend dynamically display data from the backend involved learning about the Fetch API and DOM manipulation.
+- **Git and GitHub**: Using multiple computers when building the application led to some conflicts a push issues, based on SSH keys and configurations.
 
 ### Tools Used
 
