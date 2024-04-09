@@ -5,7 +5,6 @@ function fetchRecipes() {
         .catch(error => console.error('Error fetching recipes:', error));
 }
 
-
 function displayRecipes(recipes) {
     const recipeList = document.getElementById('recipe-list');
     recipeList.innerHTML = ''; // Clear existing recipes
@@ -13,17 +12,50 @@ function displayRecipes(recipes) {
     recipes.forEach(recipe => {
         const recipeElement = document.createElement('div');
         recipeElement.innerHTML = `
-            <h3>${recipe.title}</h3>
-            <p><strong>Ingredients:</strong> ${recipe.ingredients ? recipe.ingredients.join(', ') : 'No ingredients listed'}</p>
-            <p><strong>Instructions:</strong> ${recipe.instructions || 'No instructions provided'}</p>
+            <h3>${escapeHtml(recipe.title)}</h3>
+            <p><strong>Ingredients:</strong> ${recipe.ingredients ? escapeHtml(recipe.ingredients.join(', ')) : 'No ingredients listed'}</p>
+            <p><strong>Instructions:</strong> ${recipe.instructions ? escapeHtml(recipe.instructions) : 'No instructions provided'}</p>
             <p><strong>Cooking Time:</strong> ${recipe.cookingTime || 'Not specified'} minutes</p>
             <button onclick="deleteRecipe('${recipe._id}')">Delete</button>
-            <button onclick="editRecipe('${recipe._id}')">Edit</button>
+            <button onclick="editRecipeForm('${recipe._id}', '${escapeHtml(recipe.title)}', '${escapeHtml(recipe.ingredients.join(','))}', '${escapeHtml(recipe.instructions)}', ${recipe.cookingTime})">Edit</button>
         `;
         recipeList.appendChild(recipeElement);
     });
 }
 
+function editRecipeForm(id, title, ingredients, instructions, cookingTime) {
+    document.getElementById('edit-id').value = id;
+    document.getElementById('edit-title').value = title;
+    document.getElementById('edit-ingredients').value = ingredients;
+    document.getElementById('edit-instructions').value = instructions;
+    document.getElementById('edit-cookingTime').value = cookingTime;
+
+    document.getElementById('edit-form').style.display = 'block'; // Show the form
+}
+
+function editRecipe(id) {
+    const updatedRecipe = {
+        title: document.getElementById('edit-title').value,
+        ingredients: document.getElementById('edit-ingredients').value.split(',').map(ingredient => ingredient.trim()),
+        instructions: document.getElementById('edit-instructions').value,
+        cookingTime: parseInt(document.getElementById('edit-cookingTime').value, 10),
+    };
+
+    fetch(`/api/recipes/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedRecipe),
+    })
+    .then(response => {
+        if (response.ok) {
+            fetchRecipes(); // Refresh the list of recipes to show the update
+            document.getElementById('edit-form').style.display = 'none'; // Hide the form after successful update
+        } else {
+            throw new Error('Failed to update the recipe');
+        }
+    })
+    .catch(error => console.error('Error updating recipe:', error));
+}
 
 function deleteRecipe(id) {
     if (confirm('Are you sure you want to delete this recipe?')) {
@@ -34,19 +66,16 @@ function deleteRecipe(id) {
     }
 }
 
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Fetch and display recipes when the page loads
     fetchRecipes();
 
-    // Add a new recipe
     const addForm = document.getElementById('add-form');
     if (addForm) {
         addForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const newRecipe = {
                 title: document.getElementById('add-title').value,
-                ingredients: document.getElementById('add-ingredients').value.split(','),
+                ingredients: document.getElementById('add-ingredients').value.split(',').map(ingredient => ingredient.trim()),
                 instructions: document.getElementById('add-instructions').value,
                 cookingTime: parseInt(document.getElementById('add-cookingTime').value, 10),
             };
@@ -67,5 +96,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle recipe editing logic here...
+    document.getElementById('edit-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('edit-id').value; // Get the id from the hidden input field
+        editRecipe(id); // Call the editRecipe function with the id
+    });
 });
+
+function escapeHtml(text) {
+    return text
+        .toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}

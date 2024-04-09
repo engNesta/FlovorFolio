@@ -23,18 +23,23 @@ exports.getRecipeByTitle = async (req, res) => {
 };
 
 
+// In your recipeController.js or wherever you handle the POST request
 exports.createRecipe = async (req, res) => {
-    const recipe = new Recipe(req.body);
     try {
-        const existingRecipe = await Recipe.findOne({ title: recipe.title });
-        if (existingRecipe) return res.status(409).json({ message: "Recipe already exists" });
-
-        await recipe.save();
-        res.status(201).json(recipe);
-    } catch (error) {
-        res.status(409).json({ message: error.message });
+      const newRecipe = new Recipe({
+        title: req.body.title,
+        ingredients: req.body.ingredients,
+        instructions: req.body.instructions,
+        cookingTime: req.body.cookingTime,
+      });
+  
+      const savedRecipe = await newRecipe.save();
+      res.status(201).json(savedRecipe);
+    } catch (err) {
+      res.status(400).json({ message: err.message });
     }
-};
+  };
+  
 
 
 exports.updateRecipe = async (req, res) => {
@@ -49,13 +54,26 @@ exports.updateRecipe = async (req, res) => {
     }
 };
 
+
+const { isValidObjectId } = require('mongoose');
+
 exports.deleteRecipe = async (req, res) => {
     const { id } = req.params;
+
+    if (!isValidObjectId(id)) {
+        return res.status(400).json({ message: "Invalid ID format" });
+    }
+
     try {
-        const result = await Recipe.findByIdAndRemove(id);
-        if (!result) return res.status(404).json({ message: "Recipe not found" });
+        const result = await Recipe.findByIdAndDelete(id);
+        if (!result) {
+            return res.status(404).json({ message: "Recipe not found" });
+        }
         res.json({ message: "Recipe deleted successfully" });
     } catch (error) {
-        res.status(404).json({ message: error.message });
+        console.error("Error deleting recipe:", error); // Detailed logging
+        res.status(500).json({ message: "Internal server error" });
     }
 };
+
+
