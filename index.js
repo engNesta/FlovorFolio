@@ -9,7 +9,7 @@ const cors = require('cors');
 
 
 const app = express();
-app.use(express.json()); // for parsing application/json
+app.use(express.json()); 
 
 recipeRoutes.get('/api/recipes', recipeController.getAllRecipes);
 recipeRoutes.get('/api/recipes/:title', recipeController.getRecipeByTitle);
@@ -25,7 +25,7 @@ app.use(cors());
 
 app.use(express.static('public'));
 
-app.get('/favicon.ico', (req, res) => res.status(204)); // Respond with 204 No Content
+app.get('/favicon.ico', (req, res) => res.status(204)); 
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');

@@ -7,7 +7,7 @@ function fetchRecipes() {
 
 function displayRecipes(recipes) {
     const recipeList = document.getElementById('recipe-list');
-    recipeList.innerHTML = ''; // Clear existing recipes
+    recipeList.innerHTML = ''; 
 
     recipes.forEach(recipe => {
         const recipeElement = document.createElement('div');
@@ -30,7 +30,7 @@ function editRecipeForm(id, title, ingredients, instructions, cookingTime) {
     document.getElementById('edit-instructions').value = instructions;
     document.getElementById('edit-cookingTime').value = cookingTime;
 
-    document.getElementById('edit-form').style.display = 'block'; // Show the form
+    document.getElementById('edit-form').style.display = 'block'; 
 }
 
 function editRecipe(id) {
@@ -48,8 +48,8 @@ function editRecipe(id) {
     })
     .then(response => {
         if (response.ok) {
-            fetchRecipes(); // Refresh the list of recipes to show the update
-            document.getElementById('edit-form').style.display = 'none'; // Hide the form after successful update
+            fetchRecipes(); 
+            document.getElementById('edit-form').style.display = 'none'; 
         } else {
             throw new Error('Failed to update the recipe');
         }
@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('edit-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const id = document.getElementById('edit-id').value; // Get the id from the hidden input field
-        editRecipe(id); // Call the editRecipe function with the id
+        const id = document.getElementById('edit-id').value; 
+        editRecipe(id); 
     });
 });
 

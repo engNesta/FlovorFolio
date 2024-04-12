@@ -23,7 +23,7 @@ exports.getRecipeByTitle = async (req, res) => {
 };
 
 
-// In your recipeController.js or wherever you handle the POST request
+
 exports.createRecipe = async (req, res) => {
     try {
       const newRecipe = new Recipe({
@@ -71,7 +71,7 @@ exports.deleteRecipe = async (req, res) => {
         }
         res.json({ message: "Recipe deleted successfully" });
     } catch (error) {
-        console.error("Error deleting recipe:", error); // Detailed logging
+        console.error("Error deleting recipe:", error); 
         res.status(500).json({ message: "Internal server error" });
     }
 };
